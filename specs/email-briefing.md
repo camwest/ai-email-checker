@@ -44,7 +44,8 @@ An automated email processing system that runs twice daily via GitHub Actions to
 - **Processing**: Include in next briefing generation
 
 ### 4. Briefing Generation & Delivery
-- **Format**: GitHub issue created in repository
+- **Format**: GitHub issue created in private repository
+- **Target Repository**: `camwest/ai-email-briefings` (private repo for privacy)
 - **Content**: 
   - Coherent summary of all "daily-brief" emails
   - Direct links to original emails in Gmail
@@ -77,7 +78,11 @@ An automated email processing system that runs twice daily via GitHub Actions to
   - Briefing summarization prompt
 
 ### GitHub Integration
-- **Issue Creation**: Automated via GitHub API
+- **Issue Creation**: Automated via GitHub API to private repository
+- **Repository Separation**: 
+  - Code repository: `camwest/ai-email-checker` (public - for open source showcase)
+  - Briefings repository: `camwest/ai-email-briefings` (private - for privacy)
+- **Authentication**: Personal Access Token with repo scope for private repository
 - **Content**: Markdown-formatted briefings
 - **Mentions**: Configurable user tags
 
@@ -136,8 +141,9 @@ An automated email processing system that runs twice daily via GitHub Actions to
 ### Security Considerations
 - Gmail app password stored as GitHub secret
 - Claude API key stored as GitHub secret
-- GitHub token for issue creation
+- Personal Access Token for private repository stored as GitHub secret
 - No email content stored permanently
+- Email briefings stored in private repository only
 
 ### Error Handling
 - Failed email processing should not block entire workflow
@@ -179,3 +185,10 @@ An automated email processing system that runs twice daily via GitHub Actions to
 8. **State Management** ✅ **DECISION: Gmail labels are our state management**
    - Reference: [Gmail Label Management Strategy](research/2025-06-11-gmail-label-management.md)
    - **Rationale**: Labels provide natural state tracking. `daily-brief` = ready for briefing, `daily-brief-done` = already processed. No external database needed.
+
+### Architecture Decisions
+
+9. **Repository Strategy** ✅ **DECISION: Public code repository with private briefings repository**
+   - **Rationale**: Enables open source showcase while maintaining privacy. Public repo (`ai-email-checker`) contains code, specs, and documentation. Private repo (`ai-email-briefings`) contains actual email briefings via GitHub issues.
+   - **Implementation**: GitHub Actions in public repo creates issues in private repo using Personal Access Token.
+   - **Benefits**: Open source portfolio value + private email data + familiar GitHub issues workflow.
