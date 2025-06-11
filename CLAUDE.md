@@ -76,3 +76,11 @@ The CLI follows a fail-fast pattern with descriptive error messages for missing 
 
 ### Future Architecture Considerations
 The current implementation uses Himalaya CLI as a bridge to Gmail. Future iterations may migrate to direct Gmail API integration for enhanced label management and real-time push notifications.
+
+## Documentation Conventions
+
+### Research Files
+Research documents in the `research/` directory follow the naming convention:
+- Format: `YYYY-MM-DD-topic-name.md`
+- Example: `2025-06-11-gmail-push-notifications.md`
+- Purpose: Point-in-time research snapshots for technical decisions and trade-off analysis
