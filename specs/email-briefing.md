@@ -145,12 +145,37 @@ An automated email processing system that runs twice daily via GitHub Actions to
 - Malformed emails should be logged and skipped
 - AI service failures should fallback to simple categorization
 
-## Questions for Implementation
-1. **Gmail Push Notifications**: Can we use Gmail API webhooks for real-time classification?
-2. **Classification Frequency**: What's the optimal balance between responsiveness and API limits?
-3. **Gmail Label Management**: How to handle existing labels vs. creating new ones?
-4. **Email Threading**: Should replies be grouped with original emails?
-5. **Attachment Handling**: How to reference emails with attachments in briefings?
-6. **Rate Limiting**: How to handle Gmail/Claude API limits across two schedules?
-7. **Timezone Handling**: User timezone for schedule configuration?
-8. **State Management**: How to track which emails have been processed between runs?
+## Implementation Decisions
+
+### Research-Based Technical Decisions
+
+1. **Gmail Push Notifications** ✅ **DECISION: Use 30-minute polling for MVP**
+   - Research: [Gmail Push Notifications](research/2025-06-11-gmail-push-notifications.md)
+   - **Rationale**: Push notifications require complex GCP infrastructure, OAuth complexity, and weekly maintenance. 30-minute polling is simpler, costs $0, and sufficient for email workflows.
+
+2. **Classification Frequency** ✅ **DECISION: 30-minute polling is extremely conservative**
+   - Research: [API Rate Limits Analysis](research/2025-06-11-api-rate-limits.md)
+   - **Rationale**: Using only 0.000024% of Gmail quota. Even 1-minute polling would be safe. API limits are not a constraint for this project.
+
+3. **Gmail Label Management** ✅ **DECISION: Use Himalaya folder commands with find-or-create pattern**
+   - Research: [Gmail Label Management Strategy](research/2025-06-11-gmail-label-management.md)
+   - **Rationale**: Himalaya can manage Gmail labels via folder commands using same app password auth. No Gmail API complexity needed.
+
+4. **Email Threading** ✅ **DECISION: Individual email processing with subject-based thread grouping**
+   - Research: [Email Threading Strategy](research/2025-06-11-email-threading-strategy.md)
+   - **Rationale**: Himalaya doesn't support Gmail native threading, but threaded emails contain full conversation context. Group by normalized subject in briefings.
+
+5. **Attachment Handling** ✅ **DECISION: Ignore attachments for MVP**
+   - Research: [Attachment Handling Strategy](research/2025-06-11-attachment-handling-strategy.md)
+   - **Rationale**: Attachment processing adds complexity, security risks, and performance costs. Users can access attachments via Gmail links in briefings.
+
+6. **Rate Limiting** ✅ **DECISION: Not a concern**
+   - Reference: [API Rate Limits Analysis](research/2025-06-11-api-rate-limits.md)
+   - **Rationale**: 30-minute polling uses negligible API quota. Rate limiting is not a constraint for any reasonable email volume.
+
+7. **Timezone Handling** ✅ **DECISION: Use UTC/CRON for MVP, user timezones later**
+   - **Rationale**: GitHub Actions uses UTC by default. Simple cron expressions like `0 8,15 * * *` for 8 AM and 3 PM UTC. Future enhancement: user timezone configuration.
+
+8. **State Management** ✅ **DECISION: Gmail labels are our state management**
+   - Reference: [Gmail Label Management Strategy](research/2025-06-11-gmail-label-management.md)
+   - **Rationale**: Labels provide natural state tracking. `daily-brief` = ready for briefing, `daily-brief-done` = already processed. No external database needed.
