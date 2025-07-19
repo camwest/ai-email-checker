@@ -1,5 +1,5 @@
 ---
-allowed-tools: Bash(himalaya:*), TodoWrite
+allowed-tools: Bash(himalaya:*), TodoWrite, Write
 description: Review and archive emails from personal and work accounts
 ---
 
@@ -17,6 +17,16 @@ Based on the emails above, analyze and create an archiving plan. Look for:
 
 I'll use the TodoWrite tool to create a structured archiving plan for your approval.
 
-After you approve, I'll execute commands like:
-- `himalaya -c ./config.toml envelope move {email-ids} '[Gmail]/All Mail'`
-- `himalaya -c ./config.toml -a work envelope move {email-ids} '[Gmail]/All Mail'`
+After you approve, I'll archive the emails using our archive script:
+- Personal: `bun run src/archive-emails.ts {email-ids}`
+- Work: `bun run src/archive-emails.ts --account work {email-ids}`
+
+The script handles environment variable loading and uses the correct himalaya syntax:
+- `himalaya -c ./config.toml message move '[Gmail]/All Mail' {email-ids}`
+- `himalaya -c ./config.toml message move -a work '[Gmail]/All Mail' {email-ids}`
+
+After archiving, create a log file in `logs/archive-YYYY-MM-DD_HH-MM-SS.log` with:
+- Timestamp and operation details
+- List of archived emails with subjects
+- Category breakdown
+- Total count per account
