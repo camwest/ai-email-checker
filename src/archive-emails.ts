@@ -33,16 +33,29 @@ console.log(`📧 Archiving ${emailIds.length} email(s)${account ? ` from ${acco
 console.log(`Email IDs: ${emailIds.join(', ')}`);
 
 try {
-  // Build the command with optional account flag
-  let result;
+  // Gmail archiving: Move from INBOX to a non-inbox location
+  // Since All Mail contains everything, we move from INBOX to All Mail view
+  let command, result;
   if (account) {
-    result = await $`himalaya -c ./config.toml message move -a ${account} '[Gmail]/All Mail' ${emailIds}`.quiet();
+    command = `himalaya -c ./config.toml message move -a ${account} -f INBOX '[Gmail]/All Mail' ${emailIds.join(' ')}`;
+    result = await $`himalaya -c ./config.toml message move -a ${account} -f INBOX '[Gmail]/All Mail' ${emailIds}`;
   } else {
-    result = await $`himalaya -c ./config.toml message move '[Gmail]/All Mail' ${emailIds}`.quiet();
+    command = `himalaya -c ./config.toml message move -f INBOX '[Gmail]/All Mail' ${emailIds.join(' ')}`;
+    result = await $`himalaya -c ./config.toml message move -f INBOX '[Gmail]/All Mail' ${emailIds}`;
+  }
+  
+  console.log(`🔧 Command executed: ${command}`);
+  console.log(`📤 Exit code: ${result.exitCode}`);
+  
+  if (result.stdout) {
+    console.log(`📋 Output: ${result.stdout.toString()}`);
+  }
+  if (result.stderr) {
+    console.log(`⚠️  Stderr: ${result.stderr.toString()}`);
   }
   
   if (result.exitCode === 0) {
-    console.log(`✅ Successfully archived ${emailIds.length} email(s)`);
+    console.log(`✅ Successfully archived ${emailIds.length} email(s) by moving from INBOX`);
   } else {
     console.error(`❌ Failed to archive emails`);
     console.error(result.stderr.toString());
