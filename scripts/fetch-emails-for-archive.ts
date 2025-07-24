@@ -13,7 +13,7 @@ async function fetchEmails() {
   console.log("## Personal emails (gmail account):");
   console.log("```");
   try {
-    const personalEmails = await $`himalaya -c ./config.toml envelope list -s 50`.text();
+    const personalEmails = await $`himalaya -c ./config.toml envelope list -s 200`.text();
     console.log(personalEmails);
   } catch (error) {
     console.error("Failed to fetch personal emails:", error);
@@ -23,7 +23,7 @@ async function fetchEmails() {
   console.log("## Work emails:");
   console.log("```");
   try {
-    const workEmails = await $`himalaya -c ./config.toml envelope list -a work -s 50`.text();
+    const workEmails = await $`himalaya -c ./config.toml envelope list -a work -s 200`.text();
     console.log(workEmails);
   } catch (error) {
     console.error("Failed to fetch work emails:", error);
